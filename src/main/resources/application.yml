@@ -7,3 +7,13 @@ mongodb:
 
 logging:
   config: classpath:log4j2.yml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus, health, metrics"
+  metrics:
+    export:
+      prometheus:
+        enabled: true

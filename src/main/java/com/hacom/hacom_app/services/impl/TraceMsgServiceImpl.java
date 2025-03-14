@@ -5,7 +5,8 @@ import com.hacom.hacom_app.dtos.trace_msg.TraceMsgResponse;
 import com.hacom.hacom_app.entities.TraceMsg;
 import com.hacom.hacom_app.repositories.TraceMsgRepository;
 import com.hacom.hacom_app.services.TraceMsgService;
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -17,15 +18,21 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 @Service
-@RequiredArgsConstructor
 public class TraceMsgServiceImpl implements TraceMsgService {
     private static final Logger logger = LogManager.getLogger(TraceMsgServiceImpl.class);
 
     private final TraceMsgRepository repository;
+    private final Counter insertCounter;
+
+    public TraceMsgServiceImpl(TraceMsgRepository repository, MeterRegistry meterRegistry) {
+        this.repository = repository;
+        this.insertCounter = meterRegistry.counter("hacom.test.developer.insert.rx");
+    }
 
     @Override
     public Mono<TraceMsgResponse> saveTraceMsg(TraceMsgRequest req) {
         logger.info("Request recibido {}", req);
+        insertCounter.increment();
         TraceMsg traceMsg = TraceMsg.builder()
                 ._id(new ObjectId())
                 .sessionId(req.getSessionId())
