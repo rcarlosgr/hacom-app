@@ -5,3 +5,5 @@ mongodb:
   uri: "mongodb://127.0.0.1:27017"
   database: trace_db
 
+logging:
+  config: classpath:log4j2.yml
